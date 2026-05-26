@@ -80,6 +80,7 @@ function initPageAnimations() {
   initScrollProgress();
   initHeroAnimations();
   initNavbar();
+  initAnchorScrolling();
   initAboutTextReveal();
   initAboutCards();
   initHorizontalScroll();
@@ -91,7 +92,7 @@ function initPageAnimations() {
   initVolunteerModal();
   initCTASection();
   initMagneticButtons();
-  initMobileMenu();
+  initImpactRailCard();
 }
 
 /* ─── Hero Animations ─── */
@@ -149,21 +150,9 @@ function initHeroAnimations() {
   });
 }
 
-/* ─── Navbar ─── */
+/* ─── Impact Rail Navigation ─── */
 function initNavbar() {
-  const navbar = document.getElementById("navbar");
-  ScrollTrigger.create({
-    start: 100,
-    onUpdate: (self) => {
-      if (self.scroll() > 100) {
-        navbar.classList.add("scrolled");
-      } else {
-        navbar.classList.remove("scrolled");
-      }
-    },
-  });
-
-  // Dynamic Scroll Highlighter
+  // Dynamic section highlighter
   const sections = document.querySelectorAll("section[id]");
   sections.forEach((section) => {
     ScrollTrigger.create({
@@ -174,18 +163,48 @@ function initNavbar() {
         if (self.isActive) {
           const id = section.getAttribute("id");
           document
-            .querySelectorAll(".nav-links a, .mobile-nav-link")
+            .querySelectorAll(".impact-rail-link")
             .forEach((link) => {
               link.classList.remove("active");
             });
           const activeNavLinks = document.querySelectorAll(
-            `.nav-links a[href="#${id}"], .mobile-nav-link[href="#${id}"]`,
+            `.impact-rail-link[href="#${id}"]`,
           );
           activeNavLinks.forEach((link) => link.classList.add("active"));
         }
       },
     });
   });
+}
+
+/* ─── Anchor Scrolling ─── */
+function initAnchorScrolling() {
+  const projectLinks = document.querySelectorAll('a[href="#projects"]');
+  const projectCarousel = document.getElementById("projects-carousel-stage");
+  if (!projectCarousel) return;
+
+  function scrollToProjectCarousel() {
+    const railOffset = window.innerWidth <= 768 ? 96 : 36;
+    const targetTop =
+      projectCarousel.getBoundingClientRect().top + window.scrollY - railOffset;
+
+    window.scrollTo({
+      top: targetTop,
+      behavior: "smooth",
+    });
+  }
+
+  projectLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.history.pushState(null, "", "#projects");
+      scrollToProjectCarousel();
+    });
+  });
+
+  if (window.location.hash === "#projects") {
+    window.setTimeout(scrollToProjectCarousel, 100);
+  }
 }
 
 /* ─── About Text Reveal (word-by-word) ─── */
@@ -226,71 +245,74 @@ function initAboutTextReveal() {
 
 /* ─── About Detail Cards ─── */
 function initAboutCards() {
-  const cards = document.querySelectorAll(".about-detail-card");
-  cards.forEach((card, i) => {
+  const items = document.querySelectorAll(".recognition-item");
+  items.forEach((item, i) => {
     ScrollTrigger.create({
-      trigger: card,
+      trigger: item,
       start: "top 85%",
       onEnter: () => {
-        gsap.to(card, {
+        gsap.to(item, {
           opacity: 1,
           y: 0,
           duration: 0.7,
           delay: i * 0.12,
           ease: "power2.out",
         });
-        card.classList.add("visible");
+        item.classList.add("visible");
       },
       once: true,
     });
   });
 }
 
-/* ─── Projects Grid Animations ─── */
+/* ─── Projects Carousel ─── */
 function initHorizontalScroll() {
-  const cards = document.querySelectorAll(".project-card");
+  const stage = document.getElementById("projects-carousel-stage");
+  const items = gsap.utils.toArray(".project-carousel-item");
+  if (!stage || !items.length) return;
 
-  // Set initial 3D transform perspective properties
-  gsap.set(cards, {
-    transformPerspective: 1200,
-    transformOrigin: "top center",
-  });
+  let progress = 0;
+  let activeIndex = 0;
 
-  cards.forEach((card, i) => {
-    gsap.fromTo(
-      card,
-      {
-        opacity: 0,
-        y: 90,
-        rotationX: -15,
-        scale: 0.92,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        rotationX: 0,
-        scale: 1,
-        duration: 1.0,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: card,
-          start: "top 88%",
-          toggleActions: "play none none none",
-          once: true,
-        },
-        delay: (i % 3) * 0.12,
-        onComplete: () => {
-          card.classList.add("visible");
-        },
-      },
+  const getZindex = (array, index) =>
+    array.map((_, i) =>
+      index === i ? array.length : array.length - Math.abs(index - i),
     );
+
+  function displayItems(item, index) {
+    const activeProgress = (progress / 100) * (items.length - 1);
+    const zIndex = getZindex(items, activeIndex)[index];
+    item.style.setProperty("--zIndex", zIndex);
+    item.style.setProperty("--active", (index - activeProgress) / items.length);
+  }
+
+  function animate() {
+    progress = Math.max(0, Math.min(progress, 100));
+    activeIndex = Math.round((progress / 100) * (items.length - 1));
+    items.forEach(displayItems);
+  }
+
+  ScrollTrigger.create({
+    trigger: stage,
+    start: "top 12%",
+    end: () => `+=${items.length * window.innerHeight * 0.48}`,
+    scrub: 0.45,
+    pin: true,
+    anticipatePin: 1,
+    invalidateOnRefresh: true,
+    onUpdate: (self) => {
+      progress = self.progress * 100;
+      animate();
+    },
   });
+
+  animate();
 }
 
 /* ─── Impact Section ─── */
 function initImpactSection() {
   const items = document.querySelectorAll(
-    ".impact-card-new, .impact-photo-card",
+    ".impact-stat-item, .impact-carousel-shell",
   );
   items.forEach((item, i) => {
     ScrollTrigger.create({
@@ -320,6 +342,8 @@ function initImpactSection() {
       once: true,
     });
   });
+
+  initImpactCarousel();
 }
 
 function animateCounter(el) {
@@ -333,6 +357,45 @@ function animateCounter(el) {
       el.textContent = Math.ceil(obj.val).toLocaleString();
     },
   });
+}
+
+function initImpactCarousel() {
+  const cards = gsap.utils.toArray(".impact-carousel-card");
+  if (!cards.length) return;
+
+  const totalItems = cards.length;
+  const offset = window.innerWidth <= 768 ? 18 : 34;
+  let currentItem = 0;
+
+  function updatePositions() {
+    for (let i = 0; i < totalItems; i++) {
+      const itemIndex = (currentItem + i) % totalItems;
+      const card = cards[itemIndex];
+      gsap.to(card, {
+        duration: 0.8,
+        x: offset * i,
+        y: -offset * i,
+        zIndex: totalItems - i,
+        scale: 1 - i * 0.035,
+        opacity: 1 - i * 0.08,
+        ease: "power2.out",
+      });
+    }
+  }
+
+  gsap.set(cards, {
+    x: (index) => offset * index,
+    y: (index) => -offset * index,
+    zIndex: (index) => totalItems - index,
+    scale: (index) => 1 - index * 0.035,
+    opacity: (index) => 1 - index * 0.08,
+  });
+
+  updatePositions();
+  window.setInterval(() => {
+    currentItem = (currentItem + 1) % totalItems;
+    updatePositions();
+  }, 2200);
 }
 
 /* ─── Gallery ─── */
@@ -358,25 +421,219 @@ function initGallery() {
 }
 
 /* ─── Events Section ─── */
+const eventDetails = {
+  water: {
+    title: "World Water Day 2025",
+    category: "Community",
+    image: "assets/images/project-prakriti.jpg",
+    imageAlt: "Tree and water conservation activity for World Water Day",
+    description:
+      "Water is essential for life, yet millions worldwide face water scarcity and pollution. World Water Day is a global initiative to raise awareness about water conservation and responsible usage. InAmigos Foundation is organizing an interactive event to educate and inspire individuals to take meaningful action toward a water-secure future.",
+    highlights: [
+      "Awareness sessions on water conservation and sustainability",
+      "Expert talks on global water challenges and solutions",
+      "Workshops on rainwater harvesting and water-efficient practices",
+      "Community engagement activities to promote clean water initiatives",
+    ],
+    closing:
+      "Let us come together to protect and preserve our most precious resource: water.",
+    details: [
+      ["Start Date & Time", "22 Mar 2025 06:00 pm"],
+      ["End Date & Time", "23 Mar 2025 12:00 am"],
+      ["Location", "Online"],
+      ["Category", "Community"],
+      ["Organizer Email", "Hr@inamigosfoundation.org.in"],
+      ["Phone", "+91 6267 309 902"],
+      ["Address", "online"],
+    ],
+  },
+  happiness: {
+    title: "International Day of Happiness 2025",
+    category: "Community",
+    image: "assets/images/groupactivity.webp",
+    imageAlt: "Community gathering for happiness and well-being",
+    description:
+      "Happiness is not just a feeling; it is a way of life. The International Day of Happiness is dedicated to promoting global well-being, kindness, and positive change. InAmigos Foundation invites you to be part of this celebration, where we explore the science of happiness and how small actions can make a big impact on our lives and society.",
+    highlights: [
+      "Interactive sessions on mindfulness and well-being",
+      "Fun activities promoting happiness and positivity",
+      "Discussions on mental health awareness and self-care",
+      "Spreading kindness through community engagement",
+    ],
+    closing:
+      "Let us come together to create a happier, more compassionate world, one smile at a time.",
+    details: [
+      ["Start Date & Time", "20 Mar 2025 06:00 pm"],
+      ["End Date & Time", "21 Mar 2025 12:00 am"],
+      ["Location", "Online"],
+      ["Category", "Community"],
+      ["Organizer Email", "Hr@inamigosfoundation.org.in"],
+      ["Phone", "+91 6267 309 902"],
+      ["Address", "Online"],
+    ],
+  },
+  science: {
+    title: "International Day of Women and Girls in Science 2025",
+    category: "Education",
+    image: "assets/images/project-udaan.jpg",
+    imageAlt: "Women empowerment artwork for science and education",
+    description:
+      "The International Day of Women and Girls in Science is a global initiative that highlights the crucial role women play in scientific advancements and innovation. InAmigos Foundation is hosting a special event to honor the achievements of women in STEM, encourage young girls to pursue careers in science, and foster an inclusive environment for future innovators.",
+    highlights: [],
+    closing:
+      "Together, let us break barriers and create a future where women and girls thrive in science and technology.",
+    details: [
+      ["Start Date & Time", "11 Feb 2025 12:30 pm"],
+      ["End Date & Time", "12 Feb 2025 12:00 am"],
+      ["Location", "Rohtak, Haryana"],
+      ["Category", "Education"],
+      ["Organizer Email", "Hr@inamigosfoundation.org.in"],
+      ["Phone", "+91 6267 309 902"],
+      ["Address", "Rohtak, Haryana"],
+    ],
+  },
+};
+
 function initEventsSection() {
-  const eventCards = document.querySelectorAll(".event-card");
-  eventCards.forEach((card, i) => {
-    ScrollTrigger.create({
-      trigger: card,
-      start: "top 88%",
-      onEnter: () => {
-        gsap.to(card, {
-          opacity: 1,
-          y: 0,
-          duration: 0.7,
-          delay: i * 0.15,
-          ease: "power2.out",
-        });
-        card.classList.add("visible");
-      },
-      once: true,
+  const deck = document.getElementById("events-grid");
+  const cards = Array.from(document.querySelectorAll(".event-card"));
+  const prevBtn = document.getElementById("events-prev");
+  const nextBtn = document.getElementById("events-next");
+  const dotsWrap = document.getElementById("events-dots");
+  const readMoreLinks = document.querySelectorAll(".event-read-more");
+  const modalOverlay = document.getElementById("event-modal-overlay");
+  const modal = document.getElementById("event-modal");
+  const modalClose = document.getElementById("event-modal-close");
+  if (!deck || !cards.length || !prevBtn || !nextBtn || !dotsWrap) return;
+
+  let activeIndex = 0;
+  let autoplay;
+
+  const dots = cards.map((_, index) => {
+    const dot = document.createElement("button");
+    dot.className = "events-deck-dot";
+    dot.type = "button";
+    dot.setAttribute("aria-label", `Show event ${index + 1}`);
+    dot.addEventListener("click", () => {
+      setActive(index);
+      restartAutoplay();
+    });
+    dotsWrap.appendChild(dot);
+    return dot;
+  });
+
+  function setActive(index) {
+    activeIndex = (index + cards.length) % cards.length;
+
+    cards.forEach((card, cardIndex) => {
+      const offset = (cardIndex - activeIndex + cards.length) % cards.length;
+      card.classList.remove("is-active", "is-next", "is-after-next", "is-prev");
+
+      if (offset === 0) card.classList.add("is-active");
+      else if (offset === 1) card.classList.add("is-next");
+      else if (offset === 2) card.classList.add("is-after-next");
+      else card.classList.add("is-prev");
+    });
+
+    dots.forEach((dot, dotIndex) => {
+      dot.classList.toggle("active", dotIndex === activeIndex);
+      dot.setAttribute("aria-current", dotIndex === activeIndex ? "true" : "false");
+    });
+  }
+
+  function next() {
+    setActive(activeIndex + 1);
+  }
+
+  function restartAutoplay() {
+    window.clearInterval(autoplay);
+    autoplay = window.setInterval(next, 4200);
+  }
+
+  prevBtn.addEventListener("click", () => {
+    setActive(activeIndex - 1);
+    restartAutoplay();
+  });
+
+  nextBtn.addEventListener("click", () => {
+    next();
+    restartAutoplay();
+  });
+
+  deck.addEventListener("mouseenter", () => window.clearInterval(autoplay));
+  deck.addEventListener("mouseleave", restartAutoplay);
+
+  function openEventModal(eventId) {
+    const data = eventDetails[eventId];
+    if (!data || !modalOverlay) return;
+
+    document.getElementById("event-modal-img").src = data.image;
+    document.getElementById("event-modal-img").alt = data.imageAlt;
+    document.getElementById("event-modal-category").textContent =
+      data.category;
+    document.getElementById("event-modal-title").textContent = data.title;
+    document.getElementById("event-modal-desc").textContent = data.description;
+    document.getElementById("event-modal-closing").textContent = data.closing;
+
+    const highlights = document.getElementById("event-modal-highlights");
+    highlights.innerHTML = "";
+    if (data.highlights.length) {
+      const h4 = document.createElement("h4");
+      h4.textContent = "Key Highlights";
+      const ul = document.createElement("ul");
+      data.highlights.forEach((highlight) => {
+        const li = document.createElement("li");
+        li.textContent = highlight;
+        ul.appendChild(li);
+      });
+      highlights.append(h4, ul);
+    }
+
+    const details = document.getElementById("event-modal-details");
+    details.innerHTML = "";
+    data.details.forEach(([label, value]) => {
+      const item = document.createElement("div");
+      const dt = document.createElement("dt");
+      const dd = document.createElement("dd");
+      dt.textContent = label;
+      dd.textContent = value;
+      item.append(dt, dd);
+      details.appendChild(item);
+    });
+
+    modalOverlay.classList.add("active");
+    document.body.style.overflow = "hidden";
+    window.clearInterval(autoplay);
+  }
+
+  function closeEventModal() {
+    if (!modalOverlay) return;
+    modalOverlay.classList.remove("active");
+    document.body.style.overflow = "";
+    restartAutoplay();
+  }
+
+  readMoreLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      openEventModal(link.dataset.event);
     });
   });
+
+  if (modalOverlay && modal && modalClose) {
+    modalClose.addEventListener("click", closeEventModal);
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) closeEventModal();
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modalOverlay.classList.contains("active")) {
+        closeEventModal();
+      }
+    });
+  }
+
+  setActive(0);
+  restartAutoplay();
 }
 
 /* ─── CTA Section ─── */
@@ -445,26 +702,25 @@ function initMagneticButtons() {
   });
 }
 
-/* ─── Mobile Menu ─── */
-function initMobileMenu() {
-  const toggle = document.getElementById("mobile-menu-toggle");
-  const overlay = document.getElementById("mobile-nav-overlay");
-  if (!toggle || !overlay) return;
+/* ─── Impact Rail Card ─── */
+function initImpactRailCard() {
+  const trigger = document.getElementById("impact-rail-profile");
+  const card = document.getElementById("impact-rail-card");
+  if (!trigger || !card) return;
 
-  toggle.addEventListener("click", () => {
-    toggle.classList.toggle("active");
-    overlay.classList.toggle("active");
-    document.body.style.overflow = overlay.classList.contains("active")
-      ? "hidden"
-      : "";
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isActive = card.classList.toggle("active");
+    trigger.classList.toggle("active", isActive);
+    trigger.setAttribute("aria-expanded", String(isActive));
   });
 
-  overlay.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      toggle.classList.remove("active");
-      overlay.classList.remove("active");
-      document.body.style.overflow = "";
-    });
+  document.addEventListener("click", (e) => {
+    if (!card.contains(e.target) && e.target !== trigger) {
+      card.classList.remove("active");
+      trigger.classList.remove("active");
+      trigger.setAttribute("aria-expanded", "false");
+    }
   });
 }
 
@@ -554,13 +810,69 @@ const projectData = {
       "Disaster relief and seasonal rehabilitation support",
     ],
   },
+  "mission-life": {
+    number: "07",
+    title: "Mission Life",
+    image: "assets/images/project-prakriti2.jpg",
+    tags: ["Sustainability", "Awareness", "Climate"],
+    description:
+      "Mission Life reflects InAmigos Foundation's vision for a sustainable development future. Inspired by the blog theme, it promotes mindful living, environmental responsibility, reduced waste, and collective action for a cleaner, healthier planet.",
+    highlights: [
+      "Awareness around sustainable consumption and daily habits",
+      "Community action for environmental protection",
+      "Encouraging food, water, and energy responsibility",
+      "A call for citizens to save earth and save life",
+    ],
+  },
+  "save-water": {
+    number: "08",
+    title: "Save Water",
+    image: "assets/images/groupactivity2.jpg",
+    tags: ["Water", "Conservation", "Community"],
+    description:
+      "Save Water, Save Life is a campaign focused on water conservation, responsible usage, and clean water accessibility. It highlights rainwater harvesting, water management workshops, tree plantation, and simple everyday actions that protect this essential resource.",
+    highlights: [
+      "Rainwater harvesting campaigns in urban and rural areas",
+      "Workshops on efficient water usage and leak detection",
+      "Tree plantation to support groundwater recharge",
+      "Clean water awareness for underserved communities",
+    ],
+  },
+  "healthy-lifestyle": {
+    number: "09",
+    title: "Healthy Lifestyle",
+    image: "assets/images/volunteergroupphoto.jpg",
+    tags: ["Health", "Wellbeing", "Awareness"],
+    description:
+      "Adopt a Healthy Lifestyle is a holistic well-being initiative inspired by InAmigos Foundation's blog. It encourages nutrition, physical activity, sleep, stress management, mental health, and consistent healthy choices.",
+    highlights: [
+      "Promoting nutrition and balanced daily routines",
+      "Encouraging physical activity and adequate sleep",
+      "Stress management and mental health awareness",
+      "Reducing harmful habits through community education",
+    ],
+  },
+  "sustainable-living": {
+    number: "10",
+    title: "Sustainable Living",
+    image: "assets/images/volunteer2.jpg",
+    tags: ["LIFE", "Waste", "Green Living"],
+    description:
+      "Sustainable Living brings together the LIFE themes shared by InAmigos Foundation: saving energy, saving water, reducing waste, and adopting practical habits that protect the environment while strengthening communities.",
+    highlights: [
+      "Saving energy through efficient appliances and mindful usage",
+      "Water conservation through low-flow fixtures and reuse",
+      "Waste segregation, recycling, and composting",
+      "Carpooling, local produce, and minimalist consumption",
+    ],
+  },
 };
 
 function initProjectModal() {
   const overlay = document.getElementById("project-modal-overlay");
   const modal = document.getElementById("project-modal");
   const closeBtn = document.getElementById("project-modal-close");
-  const panels = document.querySelectorAll(".project-card");
+  const panels = document.querySelectorAll(".project-carousel-item");
 
   if (!overlay || !modal || !closeBtn) return;
 
@@ -667,7 +979,8 @@ function initScrollProgress() {
     const docHeight =
       document.documentElement.scrollHeight - window.innerHeight;
     const scrollPercent = (scrollTop / docHeight) * 100;
-    bar.style.width = scrollPercent + "%";
+    const railOffset = window.innerWidth <= 768 ? 0 : 92;
+    bar.style.width = `calc((100vw - ${railOffset}px) * ${scrollPercent / 100})`;
   });
 }
 
@@ -676,6 +989,7 @@ function initFAQAccordion() {
   const faqItems = document.querySelectorAll(".faq-item");
   faqItems.forEach((item) => {
     const trigger = item.querySelector(".faq-trigger");
+    trigger.setAttribute("aria-expanded", String(item.classList.contains("active")));
     trigger.addEventListener("click", () => {
       const isActive = item.classList.contains("active");
 
@@ -683,11 +997,14 @@ function initFAQAccordion() {
       faqItems.forEach((other) => {
         if (other !== item) {
           other.classList.remove("active");
+          const otherTrigger = other.querySelector(".faq-trigger");
+          if (otherTrigger) otherTrigger.setAttribute("aria-expanded", "false");
         }
       });
 
       // Toggle current FAQ item
       item.classList.toggle("active", !isActive);
+      trigger.setAttribute("aria-expanded", String(!isActive));
     });
   });
 }
@@ -702,7 +1019,7 @@ function initVolunteerModal() {
 
   // Triggers
   const openTriggers = document.querySelectorAll(
-    '.open-volunteer-trigger, a[href*="volunteers"], #nav-join-btn, #hero-volunteer-btn, #cta-join-btn, #cta-volunteer-btn',
+    '.open-volunteer-trigger, a[href*="volunteers"], #side-join-btn, #hero-volunteer-btn, #cta-join-btn, #cta-volunteer-btn',
   );
 
   if (!overlay || !modal || !closeBtn || !form) return;
