@@ -93,7 +93,6 @@ function initPageAnimations() {
   initSupportModals();
   initCTASection();
   initMagneticButtons();
-  initImpactRailCard();
 }
 
 /* ─── Hero Animations ─── */
@@ -735,28 +734,6 @@ function initMagneticButtons() {
     btn.addEventListener("mouseleave", () => {
       gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1,0.4)" });
     });
-  });
-}
-
-/* ─── Impact Rail Card ─── */
-function initImpactRailCard() {
-  const trigger = document.getElementById("impact-rail-profile");
-  const card = document.getElementById("impact-rail-card");
-  if (!trigger || !card) return;
-
-  trigger.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const isActive = card.classList.toggle("active");
-    trigger.classList.toggle("active", isActive);
-    trigger.setAttribute("aria-expanded", String(isActive));
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!card.contains(e.target) && e.target !== trigger) {
-      card.classList.remove("active");
-      trigger.classList.remove("active");
-      trigger.setAttribute("aria-expanded", "false");
-    }
   });
 }
 

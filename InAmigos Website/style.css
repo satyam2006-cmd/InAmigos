@@ -227,6 +227,7 @@ body {
   border-top: 1px solid rgba(24, 137, 201, 0.2);
 }
 .impact-rail-profile {
+  display: block;
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -249,54 +250,6 @@ body {
   border-radius: 50%;
   object-fit: cover;
 }
-.impact-rail-card {
-  position: absolute;
-  left: 56px;
-  top: 0;
-  width: 240px;
-  padding: 18px;
-  border-radius: 16px;
-  background: var(--moonlight);
-  color: var(--oxford-blue);
-  border: 1px solid rgba(24, 137, 201, 0.22);
-  box-shadow: 0 24px 60px rgba(7, 19, 55, 0.24);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(-8px);
-  transition: 0.25s var(--ease);
-}
-.impact-rail-card.active {
-  opacity: 1;
-  pointer-events: all;
-  transform: translateX(0);
-}
-.impact-rail-card strong,
-.impact-rail-card span,
-.impact-rail-card a {
-  display: block;
-}
-.impact-rail-card strong {
-  font-family: var(--serif);
-  font-size: 20px;
-  line-height: 1.15;
-}
-.impact-rail-card span {
-  margin: 8px 0 14px;
-  color: var(--steel);
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-.impact-rail-card a {
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: var(--oxford-blue);
-  color: var(--moonlight);
-  font-size: 13px;
-  font-weight: 800;
-  text-align: center;
-}
-
 /* ═══ HERO ═══ */
 .hero {
   position: relative;
@@ -1475,13 +1428,20 @@ body {
     gap: 8px;
   }
   .impact-rail-brand {
-    display: none;
+    width: auto;
+    flex: 0 0 auto;
+    padding-right: 8px;
+    padding-bottom: 0;
+    border-bottom: none;
+    border-right: 1px solid rgba(73, 91, 125, 0.18);
   }
   .impact-rail-profile {
-    display: none;
+    width: 42px;
+    height: 42px;
   }
   .impact-rail-nav {
     flex: 1;
+    min-width: 0;
     overflow-x: auto;
   }
   .impact-rail-nav ul {
@@ -1506,8 +1466,7 @@ body {
     width: 16px;
     height: 16px;
   }
-  .impact-rail-link span,
-  .impact-rail-card {
+  .impact-rail-link span {
     display: none;
   }
   .scroll-progress {
