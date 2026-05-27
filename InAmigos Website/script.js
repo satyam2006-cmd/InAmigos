@@ -299,6 +299,14 @@ function initHorizontalScroll() {
   const items = gsap.utils.toArray(".project-carousel-item");
   if (!stage || !items.length) return;
 
+  if (window.matchMedia("(max-width: 1024px)").matches) {
+    items.forEach((item, index) => {
+      item.style.setProperty("--zIndex", items.length - index);
+      item.style.setProperty("--active", 0);
+    });
+    return;
+  }
+
   let progress = 0;
   let activeIndex = 0;
 
@@ -478,7 +486,7 @@ const eventDetails = {
   happiness: {
     title: "International Day of Happiness 2025",
     category: "Community",
-    image: "assets/images/groupactivity.webp",
+    image: "assets/images/groupactivity2.jpg",
     imageAlt: "Community gathering for happiness and well-being",
     description:
       "Happiness is not just a feeling; it is a way of life. The International Day of Happiness is dedicated to promoting global well-being, kindness, and positive change. InAmigos Foundation invites you to be part of this celebration, where we explore the science of happiness and how small actions can make a big impact on our lives and society.",
@@ -503,7 +511,7 @@ const eventDetails = {
   science: {
     title: "International Day of Women and Girls in Science 2025",
     category: "Education",
-    image: "assets/images/project-udaan.jpg",
+    image: "assets/images/udaan.png",
     imageAlt: "Women empowerment artwork for science and education",
     description:
       "The International Day of Women and Girls in Science is a global initiative that highlights the crucial role women play in scientific advancements and innovation. InAmigos Foundation is hosting a special event to honor the achievements of women in STEM, encourage young girls to pursue careers in science, and foster an inclusive environment for future innovators.",
@@ -757,7 +765,7 @@ const projectData = {
   vikas: {
     number: "01",
     title: "Project Vikas",
-    image: "assets/images/project-vikas.jpg",
+    image: "assets/images/vikas.jpg",
     tags: ["Youth", "Skills", "Career"],
     description:
       "Project Vikas bridges the gap between education and employability through internships, career guidance, webinars, seminars, resume building, interview preparation, and hands-on exposure across digital marketing, finance, research, operations, content, social work, and more.",
@@ -771,7 +779,7 @@ const projectData = {
   jeev: {
     number: "02",
     title: "Project Jeev",
-    image: "assets/images/project-jeev.jpg",
+    image: "assets/images/jeev.png",
     tags: ["Animal Welfare", "Rescue", "Protection"],
     description:
       "Project Jeev is dedicated to animals who have nowhere to turn. The initiative supports stray dogs, cats, cows, and other animals through feeding, shelter support, emotional care, awareness, and volunteer-led community action.",
@@ -785,7 +793,7 @@ const projectData = {
   udaan: {
     number: "03",
     title: "Project Udaan",
-    image: "assets/images/project-udaan.jpg",
+    image: "assets/images/udaan.png",
     tags: ["Women", "Empowerment", "Skills"],
     description:
       "Project Udaan empowers women by collaborating with self-help groups in rural areas and supporting financial independence, skill development, leadership, entrepreneurship, and menstrual hygiene awareness.",
@@ -813,7 +821,7 @@ const projectData = {
   bachpanshala: {
     number: "05",
     title: "BachpanShala",
-    image: "assets/images/project-bachpanshala.jpg",
+    image: "assets/images/bachpan.png",
     tags: ["Education", "Children", "Learning"],
     description:
       "Project BachpanShala bridges educational gaps for underprivileged children through school education support, basic digital literacy, life skills, mentorship, safe learning spaces, and community-based learning activities.",
@@ -827,7 +835,7 @@ const projectData = {
   seva: {
     number: "06",
     title: "Project Seva",
-    image: "assets/images/about-ngo.jpg",
+    image: "assets/images/sewa.png",
     tags: ["Food", "Clothing", "Support"],
     description:
       "Project Seva responds to essential community needs by distributing meals, clothing, and support resources to underprivileged families while keeping dignity and direct visible impact at the center of every contribution.",
@@ -841,7 +849,7 @@ const projectData = {
   "mission-life": {
     number: "07",
     title: "Mission Life",
-    image: "assets/images/project-prakriti2.jpg",
+    image: "assets/images/life.png",
     tags: ["Sustainability", "Awareness", "Climate"],
     description:
       "Mission Life reflects InAmigos Foundation's vision for a sustainable development future. Inspired by the blog theme, it promotes mindful living, environmental responsibility, reduced waste, and collective action for a cleaner, healthier planet.",
@@ -855,7 +863,7 @@ const projectData = {
   "save-water": {
     number: "08",
     title: "Save Water",
-    image: "assets/images/groupactivity2.jpg",
+    image: "assets/images/water.png",
     tags: ["Water", "Conservation", "Community"],
     description:
       "Save Water, Save Life is a campaign focused on water conservation, responsible usage, and clean water accessibility. It highlights rainwater harvesting, water management workshops, tree plantation, and simple everyday actions that protect this essential resource.",
@@ -869,7 +877,7 @@ const projectData = {
   "healthy-lifestyle": {
     number: "09",
     title: "Healthy Lifestyle",
-    image: "assets/images/volunteergroupphoto.jpg",
+    image: "assets/images/healthy.png",
     tags: ["Health", "Wellbeing", "Awareness"],
     description:
       "Adopt a Healthy Lifestyle is a holistic well-being initiative inspired by InAmigos Foundation's blog. It encourages nutrition, physical activity, sleep, stress management, mental health, and consistent healthy choices.",
@@ -883,7 +891,7 @@ const projectData = {
   "sustainable-living": {
     number: "10",
     title: "Sustainable Living",
-    image: "assets/images/volunteer2.jpg",
+    image: "assets/images/sus.png",
     tags: ["LIFE", "Waste", "Green Living"],
     description:
       "Sustainable Living brings together the LIFE themes shared by InAmigos Foundation: saving energy, saving water, reducing waste, and adopting practical habits that protect the environment while strengthening communities.",
