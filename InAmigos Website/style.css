@@ -159,6 +159,7 @@ body {
   padding-top: 8px;
 }
 .impact-rail-nav ul,
+.impact-rail-brand,
 .impact-rail-actions {
   width: 100%;
   display: flex;
@@ -215,6 +216,11 @@ body {
   opacity: 1;
   transform: translateY(-50%) translateX(0);
 }
+.impact-rail-brand {
+  position: relative;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(24, 137, 201, 0.2);
+}
 .impact-rail-actions {
   position: relative;
   padding-top: 10px;
@@ -246,7 +252,7 @@ body {
 .impact-rail-card {
   position: absolute;
   left: 56px;
-  bottom: 0;
+  top: 0;
   width: 240px;
   padding: 18px;
   border-radius: 16px;
@@ -1467,6 +1473,9 @@ body {
   .impact-rail-inner {
     flex-direction: row;
     gap: 8px;
+  }
+  .impact-rail-brand {
+    display: none;
   }
   .impact-rail-profile {
     display: none;
