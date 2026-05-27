@@ -90,6 +90,7 @@ function initPageAnimations() {
   initProjectModal();
   initFAQAccordion();
   initVolunteerModal();
+  initSupportModals();
   initCTASection();
   initMagneticButtons();
   initImpactRailCard();
@@ -179,14 +180,14 @@ function initNavbar() {
 
 /* ─── Anchor Scrolling ─── */
 function initAnchorScrolling() {
-  const projectLinks = document.querySelectorAll('a[href="#projects"]');
+  const internalLinks = document.querySelectorAll('a[href^="#"]');
   const projectCarousel = document.getElementById("projects-carousel-stage");
-  if (!projectCarousel) return;
 
-  function scrollToProjectCarousel() {
+  function scrollToElement(target) {
+    if (!target) return;
     const railOffset = window.innerWidth <= 768 ? 96 : 36;
     const targetTop =
-      projectCarousel.getBoundingClientRect().top + window.scrollY - railOffset;
+      target.getBoundingClientRect().top + window.scrollY - railOffset;
 
     window.scrollTo({
       top: targetTop,
@@ -194,15 +195,42 @@ function initAnchorScrolling() {
     });
   }
 
-  projectLinks.forEach((link) => {
+  function scrollToProjectCarousel() {
+    scrollToElement(projectCarousel);
+  }
+
+  internalLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
+      const hash = link.getAttribute("href");
+      if (!hash || hash === "#" || hash === "#join" || hash === "#partner" || hash === "#donate") {
+        return;
+      }
+
+      const projectId = link.getAttribute("data-project-link");
       e.preventDefault();
-      window.history.pushState(null, "", "#projects");
-      scrollToProjectCarousel();
+      window.history.pushState(null, "", hash);
+
+      if (hash === "#projects" && projectCarousel) {
+        scrollToProjectCarousel();
+        if (projectId) {
+          window.setTimeout(() => {
+            if (typeof window.openInAmigosProject === "function") {
+              window.openInAmigosProject(projectId);
+            } else {
+              document
+                .querySelector(`.project-carousel-item[data-project="${projectId}"]`)
+                ?.click();
+            }
+          }, 650);
+        }
+        return;
+      }
+
+      scrollToElement(document.querySelector(hash));
     });
   });
 
-  if (window.location.hash === "#projects") {
+  if (window.location.hash === "#projects" && projectCarousel) {
     window.setTimeout(scrollToProjectCarousel, 100);
   }
 }
@@ -732,12 +760,12 @@ const projectData = {
     image: "assets/images/project-vikas.jpg",
     tags: ["Youth", "Skills", "Career"],
     description:
-      "Project Vikas focuses on empowering the youth of India by enhancing their employability through comprehensive skill development programs, professional training sessions, career counseling, mentorship, and high-impact internships. We bridge the gap between academic learning and industry expectations, preparing young minds to become future leaders.",
+      "Project Vikas bridges the gap between education and employability through internships, career guidance, webinars, seminars, resume building, interview preparation, and hands-on exposure across digital marketing, finance, research, operations, content, social work, and more.",
     highlights: [
-      "500+ Youth trained in professional and leadership skills",
-      "Partnership with industry leaders for internship and job opportunities",
-      "Regular career mentoring and guidance webinars",
-      "Focus on resume writing, digital literacy, and public speaking",
+      "30,000+ interns onboarded and trained in the last four years",
+      "Internship exposure across multiple professional domains",
+      "Resume building and interview preparation support",
+      "Webinars, seminars, live shows, talent shows, and career events",
     ],
   },
   jeev: {
@@ -746,12 +774,12 @@ const projectData = {
     image: "assets/images/project-jeev.jpg",
     tags: ["Animal Welfare", "Rescue", "Protection"],
     description:
-      "Project Jeev is dedicated to advocating animal welfare and restoring dignity to stray and wild animals. Through daily feeding drives, medical rescue operations, vaccination programs, and building reflective collars for stray dogs, we ensure a safer, healthier, and more compassionate environment for our co-inhabitants.",
+      "Project Jeev is dedicated to animals who have nowhere to turn. The initiative supports stray dogs, cats, cows, and other animals through feeding, shelter support, emotional care, awareness, and volunteer-led community action.",
     highlights: [
-      "1,200+ Stray animals fed and monitored regularly",
-      "Emergency rescue and first-aid operations for injured strays",
-      "Reflective collar drives to prevent road accidents",
-      "Awareness campaigns to foster neighborhood coexistence",
+      "50+ stray animals fed daily through the volunteer network",
+      "Shelter support for animals exposed to harsh conditions",
+      "Volunteer time for feeding, comfort, and care",
+      "Awareness and fundraising support for animal protection",
     ],
   },
   udaan: {
@@ -760,12 +788,12 @@ const projectData = {
     image: "assets/images/project-udaan.jpg",
     tags: ["Women", "Empowerment", "Skills"],
     description:
-      "Project Udaan strives to dismantle socio-economic barriers by empowering women from marginalized backgrounds. We provide training in sewing, handicrafts, digital literacy, and financial planning, alongside essential sessions on legal rights and health hygiene, to help women achieve financial independence and become pillars of community transformation.",
+      "Project Udaan empowers women by collaborating with self-help groups in rural areas and supporting financial independence, skill development, leadership, entrepreneurship, and menstrual hygiene awareness.",
     highlights: [
-      "Skill development centers for tailoring and self-employment",
-      "Interactive financial planning and digital banking training",
-      "Menstrual health awareness & sanitary pad distribution campaigns",
-      "Legal awareness and leadership development modules",
+      "900+ women empowered through training and support",
+      "Skill training for livelihoods and small businesses",
+      "Menstrual hygiene and rights awareness sessions",
+      "Support networks that uplift families and communities",
     ],
   },
   prakriti: {
@@ -774,12 +802,12 @@ const projectData = {
     image: "assets/images/project-prakriti.jpg",
     tags: ["Environment", "Sustainability", "Green"],
     description:
-      "Project Prakriti is our pledge to save mother earth. Through large-scale tree plantation drives, seed-ball making workshops, and cleaning campaigns of local water bodies, we raise environment consciousness and build sustainable eco-friendly practices that combat environmental degradation and climate change.",
+      "Project Prakriti advocates sustainability and environmental conservation through plantation work, eco-friendly agriculture awareness, clean-up activities, and practical climate-conscious habits.",
     highlights: [
-      "2,500+ Saplings planted and nurtured across cities",
-      "Seed-ball making workshops for reforestation",
-      "Anti-plastic drives and waste segregation awareness",
-      "Cleanliness campaigns at heritage sites and local parks",
+      "20,000+ saplings planted through environmental action",
+      "Community awareness for sustainability and conservation",
+      "Support for eco-friendly agriculture and green practices",
+      "Clean-up and anti-waste efforts with local participation",
     ],
   },
   bachpanshala: {
@@ -788,12 +816,12 @@ const projectData = {
     image: "assets/images/project-bachpanshala.jpg",
     tags: ["Education", "Children", "Learning"],
     description:
-      "BachpanShala is our dedicated classroom for hope. By bringing education and creative learning experiences to underprivileged children in slums and rural communities, we build basic literacy, distribute essential school supplies, and promote digital learning to give every child a fair chance at building a brighter tomorrow.",
+      "Project BachpanShala bridges educational gaps for underprivileged children through school education support, basic digital literacy, life skills, mentorship, safe learning spaces, and community-based learning activities.",
     highlights: [
-      "Weekend classes for core subjects, arts, and value education",
-      "Free distribution of textbooks, stationery, and backpacks",
-      "Basic computer literacy and storytelling hours",
-      "Reducing dropout rates in local government schools",
+      "School education support for children from underserved communities",
+      "Basic digital literacy and life-skill learning",
+      "Mentorship, workshops, camps, and community engagement",
+      "Safe spaces where children can learn, express, and grow",
     ],
   },
   seva: {
@@ -802,12 +830,12 @@ const projectData = {
     image: "assets/images/about-ngo.jpg",
     tags: ["Food", "Clothing", "Support"],
     description:
-      "Project Seva stands as our active disaster and community relief initiative. In times of crisis or extreme weather, we execute distribution drives to supply healthy food, clean drinking water, warm clothes, hygiene kits, and basic necessities to families in remote and underprivileged communities, restoring human dignity.",
+      "Project Seva responds to essential community needs by distributing meals, clothing, and support resources to underprivileged families while keeping dignity and direct visible impact at the center of every contribution.",
     highlights: [
-      "Regular nutrition and food distribution drives",
-      "Winter clothing and blanket distributions",
-      "Medical checkup camps and emergency medicines supply",
-      "Disaster relief and seasonal rehabilitation support",
+      "50,000+ meals and clothing items distributed",
+      "Support for families facing urgent food and clothing needs",
+      "Relief drives connected to visible community work",
+      "Volunteer-led outreach rooted in compassion and dignity",
     ],
   },
   "mission-life": {
@@ -925,6 +953,8 @@ function initProjectModal() {
     );
   }
 
+  window.openInAmigosProject = openProjectModal;
+
   function closeProjectModal() {
     overlay.classList.remove("active");
     document.body.style.overflow = "";
@@ -1014,26 +1044,17 @@ function initVolunteerModal() {
   const overlay = document.getElementById("volunteer-modal-overlay");
   const modal = document.getElementById("volunteer-modal");
   const closeBtn = document.getElementById("volunteer-modal-close");
-  const form = document.getElementById("volunteer-form");
-  const successMsg = document.getElementById("form-success-message");
 
   // Triggers
   const openTriggers = document.querySelectorAll(
-    '.open-volunteer-trigger, a[href*="volunteers"], #side-join-btn, #hero-volunteer-btn, #cta-join-btn, #cta-volunteer-btn',
+    '.open-volunteer-trigger, a[href*="volunteers"], #side-join-btn, #hero-volunteer-btn, #cta-join-btn',
   );
 
-  if (!overlay || !modal || !closeBtn || !form) return;
+  if (!overlay || !modal || !closeBtn) return;
 
   function openVolunteerModal() {
     overlay.classList.add("active");
     document.body.style.overflow = "hidden";
-
-    // Reset form states
-    form.style.display = "flex";
-    form.style.opacity = 1;
-    form.style.transform = "translateY(0)";
-    successMsg.classList.remove("visible");
-    form.reset();
 
     gsap.killTweensOf(modal);
     gsap.fromTo(
@@ -1082,24 +1103,71 @@ function initVolunteerModal() {
     }
   });
 
-  // Handle Form Submission
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
+}
 
-    // Simulate submission with a high-end animation transition
-    gsap.to(form, {
-      opacity: 0,
-      y: -10,
-      duration: 0.3,
-      onComplete: () => {
-        form.style.display = "none";
-        successMsg.classList.add("visible");
-        gsap.fromTo(
-          successMsg,
-          { scale: 0.95, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" },
-        );
-      },
+/* ─── Partner & Donate Modals ─── */
+function initSupportModals() {
+  const modalPairs = [
+    {
+      trigger: "#cta-partner-btn, #footer-partner-btn",
+      overlay: "#partner-modal-overlay",
+      modal: "#partner-modal",
+      close: "#partner-modal-close",
+    },
+    {
+      trigger: "#cta-donate-btn",
+      overlay: "#donate-modal-overlay",
+      modal: "#donate-modal",
+      close: "#donate-modal-close",
+    },
+  ];
+
+  modalPairs.forEach((config) => {
+    const triggers = document.querySelectorAll(config.trigger);
+    const overlay = document.querySelector(config.overlay);
+    const modal = document.querySelector(config.modal);
+    const closeBtn = document.querySelector(config.close);
+
+    if (!triggers.length || !overlay || !modal || !closeBtn) return;
+
+    function openModal(e) {
+      if (e) e.preventDefault();
+      overlay.classList.add("active");
+      document.body.style.overflow = "hidden";
+
+      gsap.killTweensOf(modal);
+      gsap.fromTo(
+        modal,
+        { scale: 0.92, y: 30, opacity: 0 },
+        { scale: 1, y: 0, opacity: 1, duration: 0.45, ease: "power3.out" },
+      );
+    }
+
+    function closeModal() {
+      overlay.classList.remove("active");
+      document.body.style.overflow = "";
+
+      gsap.killTweensOf(modal);
+      gsap.to(modal, {
+        scale: 0.95,
+        y: 20,
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.in",
+      });
+    }
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener("click", openModal);
+    });
+    closeBtn.addEventListener("click", closeModal);
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeModal();
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && overlay.classList.contains("active")) {
+        closeModal();
+      }
     });
   });
 }
