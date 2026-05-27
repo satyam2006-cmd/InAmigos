@@ -1,20 +1,33 @@
+<div align="center">
+
 # InAmigos Foundation Website
 
-Official static website for InAmigos Foundation, a Section 8 non-profit organization based in Chhattisgarh, India. The site presents the foundation's mission, initiatives, events, impact, gallery, FAQs, and volunteer pathways.
+Official static website for InAmigos Foundation, a Section 8 non-profit organization based in Chhattisgarh, India.
+
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+![Status](https://img.shields.io/badge/Status-Active-success)
+![Built With](https://img.shields.io/badge/Built%20With-HTML%20%7C%20CSS%20%7C%20JavaScript-orange)
+![Responsive](https://img.shields.io/badge/Responsive-Yes-brightgreen)
+![Deployment](https://img.shields.io/badge/Deployment-GitHub%20Pages-black)
+
+</div>
 
 ## About
 
-InAmigos Foundation works across education, food support, animal welfare, women empowerment, sustainability, youth skill development, and community action. This website is built to give visitors a clear view of the foundation's work and make it easy for people to learn, connect, volunteer, and support ongoing initiatives.
+InAmigos Foundation works across education, food support, animal welfare, women empowerment, sustainability, youth skill development, and community action.
+
+This website is built to provide visitors with a clear view of the foundation’s mission, initiatives, impact, events, and volunteer opportunities through a modern and accessible digital experience.
 
 ## Features
 
-- Responsive single-page website
-- Side navigation on desktop and bottom navigation on mobile
-- Project and initiative sections
-- Impact statistics and gallery
-- Events and FAQ sections
-- Volunteer and support calls to action
-- Static deployment support through GitHub Pages
+* Responsive single-page website
+* Side navigation on desktop
+* Bottom navigation on mobile devices
+* Initiative and project showcase sections
+* Impact statistics and image gallery
+* Events and FAQ sections
+* Volunteer and support call-to-action areas
+* GitHub Pages static deployment support
 
 ## Project Structure
 
@@ -33,7 +46,7 @@ InAmigos Foundation works across education, food support, animal welfare, women 
 
 ## Run Locally
 
-Open `index.html` in a browser, or serve the repository with any local static server and visit the root page.
+Open `index.html` directly in your browser, or run a local static server.
 
 ```bash
 python -m http.server 4173
@@ -51,4 +64,4 @@ This project is licensed under the Apache License 2.0.
 
 ## Credits
 
-Designed and developed by Satyam Bhagat for InAmigos Foundation.
+Designed and developed by **Satyam Bhagat** for InAmigos Foundation.
