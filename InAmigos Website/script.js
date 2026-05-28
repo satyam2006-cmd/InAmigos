@@ -460,7 +460,7 @@ const eventDetails = {
   water: {
     title: "World Water Day 2025",
     category: "Community",
-    image: "assets/images/project-prakriti.jpg",
+    image: "assets/images/water.jpg",
     imageAlt: "Tree and water conservation activity for World Water Day",
     description:
       "Water is essential for life, yet millions worldwide face water scarcity and pollution. World Water Day is a global initiative to raise awareness about water conservation and responsible usage. InAmigos Foundation is organizing an interactive event to educate and inspire individuals to take meaningful action toward a water-secure future.",
@@ -485,7 +485,7 @@ const eventDetails = {
   happiness: {
     title: "International Day of Happiness 2025",
     category: "Community",
-    image: "assets/images/groupactivity2.jpg",
+    image: "assets/images/happyness.jpeg",
     imageAlt: "Community gathering for happiness and well-being",
     description:
       "Happiness is not just a feeling; it is a way of life. The International Day of Happiness is dedicated to promoting global well-being, kindness, and positive change. InAmigos Foundation invites you to be part of this celebration, where we explore the science of happiness and how small actions can make a big impact on our lives and society.",
@@ -510,7 +510,7 @@ const eventDetails = {
   science: {
     title: "International Day of Women and Girls in Science 2025",
     category: "Education",
-    image: "assets/images/udaan.png",
+    image: "assets/images/Womenday.jpeg",
     imageAlt: "Women empowerment artwork for science and education",
     description:
       "The International Day of Women and Girls in Science is a global initiative that highlights the crucial role women play in scientific advancements and innovation. InAmigos Foundation is hosting a special event to honor the achievements of women in STEM, encourage young girls to pursue careers in science, and foster an inclusive environment for future innovators.",
